@@ -37,6 +37,5 @@ namespace Rewrite.Structure2
             app.UseRewriter(rewriteBuilder.Build());
             app.Run(context => context.Response.WriteAsync(context.Request.Path));
         }
-
     }
 }

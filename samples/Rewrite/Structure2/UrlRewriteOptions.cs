@@ -6,6 +6,6 @@ namespace Rewrite.Structure2
 {
     public class UrlRewriteOptions
     {
-        public List<ModRewriteRule> Rules { get; set; }
+        public List<Rule> Rules { get; set; }
     }
 }

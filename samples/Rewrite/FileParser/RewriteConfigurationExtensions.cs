@@ -10,7 +10,7 @@ namespace Rewrite.FileParser
     public static class RewriteConfiguration
     {
 
-        public static List<ModRewriteRule> AddRewriteFile(string path)
+        public static List<Rule> AddRewriteFile(string path)
         {
             if (string.IsNullOrEmpty(path))
             {

@@ -9,11 +9,11 @@ namespace Rewrite.FileParser
 {
     public static class RewriteConfigurationFileParser
     { 
-        public static List<ModRewriteRule> Parse(Stream input)
+        public static List<Rule> Parse(Stream input)
         {
             var reader = new StreamReader(input);
             var line = (string) null;
-            List<ModRewriteRule> rules = new List<ModRewriteRule>();
+            var rules = new List<Rule>();
             var currentRule = new ModRewriteRule { Conditions = new List<Condition>() };
             while ((line = reader.ReadLine()) != null) {
                 // TODO handle comments

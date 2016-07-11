@@ -3,10 +3,11 @@
     "warningsAsErrors": true
   },
   "dependencies": {
-    "dotnet-test-xunit": "1.0.0-*",
-    "Microsoft.AspNetCore.Http": "1.0.0-*",
-    "Microsoft.AspNetCore.Testing": "1.0.0-*",
-    "xunit": "2.1.0",
+    "dotnet-test-xunit": "2.2.0-*",
+    "Microsoft.AspNetCore.Http": "1.1.0-*",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0-*",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0-*",
+    "xunit": "2.2.0-*",
     "Rewrite": "1.0.0-*"
   },
   "frameworks": {

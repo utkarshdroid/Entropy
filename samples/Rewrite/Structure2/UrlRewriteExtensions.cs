@@ -9,7 +9,7 @@ namespace Rewrite.Structure2
 
     public static class UrlRewriteExtensions
     {
-        public static IApplicationBuilder UseRewriter(this IApplicationBuilder app, List<ModRewriteRule> rules)
+        public static IApplicationBuilder UseRewriter(this IApplicationBuilder app, List<Rule> rules)
         {
             if (app == null)
             {
