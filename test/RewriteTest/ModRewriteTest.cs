@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Rewrite.ConditionParser;
 using Rewrite.Structure2;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace RewriteTest
@@ -14,7 +15,7 @@ namespace RewriteTest
             var context = CreateRequest("/", "/hey/hello");
             var rule = new ModRewriteRule
             {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
+                InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)")} , Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
                 Flags = FlagParser.TokenizeAndParseFlags("[F]")
             };
@@ -29,7 +30,7 @@ namespace RewriteTest
             var context = CreateRequest("/", "/hey/hello");
             var rule = new ModRewriteRule
             {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
+                InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
                 Flags = FlagParser.TokenizeAndParseFlags("[G]")
             };
@@ -44,7 +45,7 @@ namespace RewriteTest
             var context = CreateRequest("/", "/hey/hello");
             var rule = new ModRewriteRule
             {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
+                InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
                 Flags = FlagParser.TokenizeAndParseFlags("[L]")
             };
@@ -53,37 +54,6 @@ namespace RewriteTest
             Assert.True(context.Request.Path.Equals(new PathString("/hello")));
         }
 
-        [Theory]
-        [InlineData("/Hey/Hello", "/Hello")]
-        [InlineData("/heY/wHAT", "/wHAT")]
-        public void ModRewriteRule_CheckIgnoreCases(string requestPath, string expected)
-        {
-            var context = CreateRequest("/", requestPath);
-            var rule = new ModRewriteRule
-            {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
-                Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[NC]")
-            };
-            var res = rule.ApplyRule(context);
-            Assert.True(res.Result == RuleTerminiation.Continue);
-            Assert.True(context.Request.Path.Equals(new PathString(expected)));
-        }
-        [Theory]
-        [InlineData("/Hey/Hello", "/Hello")]
-        [InlineData("/heY/wHAT", "/wHAT")]
-        public void ModRewriteRule_CheckFailureWhenNotIgnoringCases(string requestPath, string expected)
-        {
-            var context = CreateRequest("/", requestPath);
-            var rule = new ModRewriteRule
-            {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
-                Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-            };
-            var res = rule.ApplyRule(context);
-            Assert.True(res.Result == RuleTerminiation.Continue);
-            Assert.True(context.Request.Path.Equals(new PathString(requestPath)));
-        }
 
         [Fact]
         public void ModRewriteRule_CheckRedirectFlag()
@@ -91,7 +61,7 @@ namespace RewriteTest
             var context = CreateRequest("/", "/hey/hello");
             var rule = new ModRewriteRule
             {
-                InitialRule = new GeneralExpression { Operand = "/hey/(.*)", Type = ConditionType.Regex },
+                InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
                 Flags = FlagParser.TokenizeAndParseFlags("[G]")
             };

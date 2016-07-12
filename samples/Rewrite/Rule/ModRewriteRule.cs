@@ -12,19 +12,15 @@ namespace Rewrite.Structure2
     {
         public List<Condition> Conditions { get; set; } = new List<Condition>();
         public string Description { get; set; } = string.Empty;
-        public GeneralExpression InitialRule { get; set; }
+        public RuleExpression InitialRule { get; set; }
         public Pattern Transforms { get; set; }
         public Flags Flags { get; set; } = new Flags(new Dictionary<FlagType, string>());
         public override RuleResult ApplyRule(HttpContext context)
         {
             // 1. Figure out which section of the string to match for the initial rule.
-            RegexOptions ignoreCase = RegexOptions.None;
-            if (Flags.CheckFlag(FlagType.NoCase) != null)
-            {
-                ignoreCase = RegexOptions.IgnoreCase;
-            }
-            var results = Regex.Match(context.Request.Path.ToString(), InitialRule.Operand, ignoreCase, TimeSpan.FromMilliseconds(1)); 
-            if (CheckResult(results.Success))
+            var results = InitialRule.Operand.Regex.Match(context.Request.Path.ToString());
+            //var results = Regex.Match(context.Request.Path.ToString(), InitialRule.Operand, ignoreCase, TimeSpan.FromMilliseconds(1)); 
+            if (CheckMatchResult(results.Success))
             {
                 return new RuleResult { Result = RuleTerminiation.Continue };
             }
@@ -68,34 +64,20 @@ namespace Rewrite.Structure2
             }
         }
 
-        private bool CheckResult(bool result)
+        private bool CheckMatchResult(bool result)
         {
             return !(result ^ InitialRule.Invert);
         }
 
         private bool CheckCondition(ModRewriteRule rule, HttpContext context, Match results, Match previous)
         {
+            // TODO Visitor pattern here
             foreach (var condition in rule.Conditions)
             {
                 var concatTestString = condition.TestStringSegments.ApplyPattern(context, results, previous);
-                var pass = false;
-                switch (condition.ConditionRegex.Type)
-                {
-                    case ConditionType.PropertyTest:
-                        pass = CheckFileCondition(concatTestString, condition, context);
-                        break;
-                    case ConditionType.IntComp:
-                        pass = CheckIntCondition(concatTestString, condition, context);
-                        break;
-                    case ConditionType.StringComp:
-                        pass = CheckStringCondition(concatTestString, condition, context);
-                        break;
-                    case ConditionType.Regex:
-                        previous = Regex.Match(concatTestString, condition.ConditionRegex.Operand);
-                        pass = previous.Success;
-                        break;
-                }
-                if (CheckResult(pass) && !(condition.Flags.CheckFlag(FlagType.Or) != null))
+                var match = condition.ConditionExpression.VisitConditionExpression(context, results, previous, concatTestString);
+
+                if (CheckMatchResult(match) && !(Flags.HasFlag(FlagType.Or)))
                 {
                     return false;
                 }

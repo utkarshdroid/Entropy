@@ -33,7 +33,7 @@ namespace Rewrite.ConditionParser
                     throw new FormatException();
                 }
                 // Will throw format exception if illegal flag
-                var flagType = Flags.LookupFlag(kvp[0]);
+                var flagType = Flags.ExistenceOfFlag(kvp[0]);
                 if (kvp.Count() == 1)
                 {
                     flagDict[flagType] = string.Empty;

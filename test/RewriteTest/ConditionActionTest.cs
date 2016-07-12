@@ -16,7 +16,7 @@ namespace RewriteTest
         {
             var results = ConditionActionParser.ParseActionCondition(condition);
 
-            var expected = new GeneralExpression { Operation = operation, Type = conditionType, Operand = variable, Invert = false };
+            var expected = new ParsedConditionExpression { Operation = operation, Type = conditionType, Operand = variable, Invert = false };
             Assert.True(CompareConditions(results, expected));
         }
 
@@ -26,7 +26,7 @@ namespace RewriteTest
             var condition = @"(.*)";
             var results = ConditionActionParser.ParseActionCondition(condition);
 
-            var expected = new GeneralExpression { Type = ConditionType.Regex, Operand = "(.*)",  Invert = false };
+            var expected = new ParsedConditionExpression { Type = ConditionType.Regex, Operand = "(.*)",  Invert = false };
             Assert.True(CompareConditions(results, expected));
         }
 
@@ -44,7 +44,7 @@ namespace RewriteTest
         {
             var results = ConditionActionParser.ParseActionCondition(condition);
 
-            var expected = new GeneralExpression { Type = cond, Operation = operation , Invert = false };
+            var expected = new ParsedConditionExpression { Type = cond, Operation = operation , Invert = false };
             Assert.True(CompareConditions(results, expected));
         }
 
@@ -62,7 +62,7 @@ namespace RewriteTest
         {
             var results = ConditionActionParser.ParseActionCondition(condition);
 
-            var expected = new GeneralExpression { Type = cond, Operation = operation, Invert = true };
+            var expected = new ParsedConditionExpression { Type = cond, Operation = operation, Invert = true };
             Assert.True(CompareConditions(results, expected));
         }
 
@@ -77,12 +77,12 @@ namespace RewriteTest
         {
             var results = ConditionActionParser.ParseActionCondition(condition);
 
-            var expected = new GeneralExpression { Type = cond, Operation = operation, Invert = false, Operand = variable };
+            var expected = new ParsedConditionExpression { Type = cond, Operation = operation, Invert = false, Operand = variable };
             Assert.True(CompareConditions(results, expected));
         }
 
         // TODO negative tests
-        private bool CompareConditions(GeneralExpression i1, GeneralExpression i2)
+        private bool CompareConditions(ParsedConditionExpression i1, ParsedConditionExpression i2)
         {
             if (i1.Operation != i2.Operation ||
                 i1.Type != i2.Type ||

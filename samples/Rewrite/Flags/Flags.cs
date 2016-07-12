@@ -38,7 +38,7 @@ namespace Rewrite.ConditionParser
             FlagDictionary = flags;
         }
 
-        public static FlagType LookupFlag(string flag)
+        public static FlagType ExistenceOfFlag(string flag)
         {
             FlagType res;
             if (!FlagLookup.TryGetValue(flag, out res))
@@ -55,6 +55,11 @@ namespace Rewrite.ConditionParser
                 return null;
             }
             return res;
+        }
+        public bool HasFlag(FlagType flag)
+        {
+            string res;
+            return FlagDictionary.TryGetValue(flag, out res);
         }
     }
     public enum FlagType
