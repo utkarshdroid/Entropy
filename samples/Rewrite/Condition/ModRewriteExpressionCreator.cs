@@ -1,23 +1,25 @@
-﻿using System;
+﻿using Rewrite.Flags;
+using System;
 using System.Text.RegularExpressions;
 
 namespace Rewrite.ConditionParser
 {
     public class ModRewriteExpressionCreator
     {
-        public static readonly TimeSpan TIMEOUT = TimeSpan.FromMilliseconds(1);
-        public static ConditionExpression CreateConditionExpression(ParsedConditionExpression pce, Flags flags)
+        private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(1);
+        public static ConditionExpression CreateConditionExpression(ParsedConditionExpression pce, ConditionFlags flags)
         {
             var condExp = new ConditionExpression();
             condExp.Invert = pce.Invert;
             if (pce.Type == ConditionType.Regex)
             {
-                if (flags.HasFlag(FlagType.NoCase)) {
-                    condExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.IgnoreCase, TIMEOUT) };
+                // todo make nullable
+                if (flags != null && flags.HasFlag(ConditionFlagType.NoCase)) {
+                    condExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.IgnoreCase, RegexTimeout) };
                 }
                 else
                 {
-                    condExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.None, TIMEOUT) };
+                    condExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.None, RegexTimeout) };
                 }
             }
             else if (pce.Type == ConditionType.IntComp)
@@ -76,17 +78,17 @@ namespace Rewrite.ConditionParser
             }
             return condExp;
         }
-        public static RuleExpression CreateRuleExpression(ParsedConditionExpression pce, Flags flags)
+        public static RuleExpression CreateRuleExpression(ParsedConditionExpression pce, RuleFlags flags)
         {
             var ruleExp = new RuleExpression();
             ruleExp.Invert = pce.Invert;
-            if (flags.HasFlag(FlagType.NoCase))
+            if (flags.HasFlag(RuleFlagType.NoCase))
             {
-                ruleExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.IgnoreCase, TIMEOUT) };
+                ruleExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.IgnoreCase, RegexTimeout) };
             }
             else
             {
-                ruleExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.None, TIMEOUT) };
+                ruleExp.Operand = new RegexOperand { Regex = new Regex(pce.Operand, RegexOptions.None, RegexTimeout) };
             }
             return ruleExp;
         }

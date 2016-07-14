@@ -14,12 +14,11 @@ namespace Rewrite.FileParser
         // TODO handle "s
         public static List<string> TokenizeRule(string rule)
         {
-            if (rule == null || rule == String.Empty)
+            if (string.IsNullOrEmpty(rule))
             {
                 return null;
             }
-            // TODO rename conditionParserContext to something more general
-            var context = new ModRewriteParserContext(rule);
+            var context = new ParserContext(rule);
             if (!context.Next())
             {
                 return null;
@@ -45,10 +44,10 @@ namespace Rewrite.FileParser
                 }
                 else if (context.Current == Space || context.Current == Tab)
                 {
-                    
                     // time to capture!
+                    // TODO: This kinda sucks, set state and skip 
                     var token = context.Capture();
-                    if (token.Length > 0)
+                    if (!string.IsNullOrEmpty(token))
                     {
                         tokens.Add(token);
                         while (context.Current == Space || context.Current == Tab)
@@ -64,7 +63,10 @@ namespace Rewrite.FileParser
                 }
             }
             var done = context.Capture();
-            tokens.Add(done);
+            if (!string.IsNullOrEmpty(done))
+            {
+                tokens.Add(done);
+            }
             return tokens;
         }
     }

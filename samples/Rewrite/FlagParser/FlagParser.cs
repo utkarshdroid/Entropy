@@ -1,49 +1,100 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using Rewrite.Flags;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using static Rewrite.ConditionParser.Flags;
 
 namespace Rewrite.ConditionParser
 {
     public class FlagParser
     {
-        public static Flags TokenizeAndParseFlags(string flags) {
+        public static RuleFlags ParseRuleFlags(string flagString) {
+            var flags = new RuleFlags();
+            ParseRuleFlags(flagString, flags);
+            return flags;
+        }
+
+        public static void ParseRuleFlags(string flagString, RuleFlags flags)
+        {
+            if (string.IsNullOrEmpty(flagString))
+            {
+                return;
+            }
             // Check that flags are contained within []
-            if (!flags.StartsWith("[") || !flags.EndsWith("]")) {
+            if (!flagString.StartsWith("[") || !flagString.EndsWith("]"))
+            {
                 throw new FormatException();
             }
             // Lexing esque step to split all flags.
             // Illegal syntax to have any spaces.
-            var tokens = flags.Substring(1, flags.Count() - 2).Split(',');
+            var tokens = flagString.Substring(1, flagString.Length - 2).Split(',');
             // Go through tokens and verify they have meaning.
             // Flags can be KVPs, delimited by '='.
-            var flagDict = new Dictionary<FlagType, string>(tokens.Count());
             foreach (string token in tokens)
             {
-                if (token == null || token.Equals(String.Empty))
+                if (string.IsNullOrEmpty(token))
                 {
                     continue;
                 }
                 string[] kvp = token.Split('=');
-                if (kvp.Count() > 2)
+                if (kvp.Length == 1)
                 {
-                    // not a kvp or statement, throw FormatException
+                    flags.AddFlag(kvp[0], null);
+                }
+                else if (kvp.Length == 2)
+                {
+                    flags.AddFlag(kvp[0], kvp[1]);
+                }
+                else
+                {
                     throw new FormatException();
                 }
-                // Will throw format exception if illegal flag
-                var flagType = Flags.ExistenceOfFlag(kvp[0]);
-                if (kvp.Count() == 1)
+            }
+        }
+
+        public static ConditionFlags ParseConditionFlags(string flagString)
+        {
+            var flags = new ConditionFlags();
+            ParseConditionFlags(flagString, flags);
+            return flags;
+        }
+
+        public static void ParseConditionFlags(string flagString, ConditionFlags flags)
+        {
+            if (string.IsNullOrEmpty(flagString))
+            {
+                return;
+            }
+            // Check that flags are contained within []
+            if (!flagString.StartsWith("[") || !flagString.EndsWith("]"))
+            {
+                throw new FormatException();
+            }
+            // Lexing esque step to split all flags.
+            // Illegal syntax to have any spaces.
+            var tokens = flagString.Substring(1, flagString.Length - 2).Split(',');
+            // Go through tokens and verify they have meaning.
+            // Flags can be KVPs, delimited by '='.
+            foreach (string token in tokens)
+            {
+                if (string.IsNullOrEmpty(token))
                 {
-                    flagDict[flagType] = string.Empty;
+                    continue;
                 }
-                else 
+                string[] kvp = token.Split('=');
+                if (kvp.Length == 1)
                 {
-                    flagDict[flagType] = kvp[1];
+                    flags.AddFlag(kvp[0], null);
+                }
+                else if (kvp.Length == 2)
+                {
+                    flags.AddFlag(kvp[0], kvp[1]);
+                }
+                else
+                {
+                    throw new FormatException();
                 }
             }
-            return new Flags(flagDict);
         }
     }
 }

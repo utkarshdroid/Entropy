@@ -6,7 +6,7 @@ namespace Rewrite.ConditionParser
 {
     public static class ServerVariables
     {
-        public static ServerVariable ApplyServerVariable(HttpContext context, string variable)
+        public static ServerVariable GetServerVariable(string variable)
         {
             switch (variable)
             {

@@ -32,7 +32,6 @@ namespace Rewrite.Structure2
 
         public Task Invoke(HttpContext context)
         {
-
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
@@ -46,6 +45,7 @@ namespace Rewrite.Structure2
                         // TODO temp stub
                         break;
                     case RuleTerminiation.ResponseComplete:
+                        // TODO cache task for perf
                         return Task.FromResult(0);
                     case RuleTerminiation.StopRules:
                         return _next(context);

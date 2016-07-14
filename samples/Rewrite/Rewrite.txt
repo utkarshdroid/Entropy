@@ -1,1 +1,3 @@
-﻿RewriteRule /hey/(.*)	/$1	[L,QSA]
+﻿RewriteCond $1			>=ant [NC]
+RewriteRule /hey/(.*)	/$1	[L,QSA]
+RewriteRule /hello	/what	[NC]

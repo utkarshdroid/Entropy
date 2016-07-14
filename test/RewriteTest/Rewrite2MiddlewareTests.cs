@@ -25,9 +25,11 @@ namespace EntropyTests.Rewrite2Tests
         {
             HttpContext context = CreateRequest(basePath, requestPath);
             var builder = new ApplicationBuilder(serviceProvider: null);
-            var rewriteBuilder = new UrlRewriteBuilder();
-            rewriteBuilder.RewritePath(matchPath, rewrite, false);
-            builder.UseRewriter(rewriteBuilder.Build());
+
+            builder.UseRewriter(rewriteBuilder =>
+            {
+                rewriteBuilder.RewritePath(matchPath, rewrite, false);
+            });
             var app = builder.Build();
             app.Invoke(context).Wait();
             Assert.Equal(rewrite, context.Request.Path);
@@ -39,9 +41,11 @@ namespace EntropyTests.Rewrite2Tests
         {
             HttpContext context = CreateRequest(basePath, requestPath);
             var builder = new ApplicationBuilder(serviceProvider: null);
-            var rewriteBuilder = new UrlRewriteBuilder();
-            rewriteBuilder.RewritePath(matchPath, rewrite, false);
-            builder.UseRewriter(rewriteBuilder.Build());
+            builder.UseRewriter(rewriteBuilder =>
+            {
+                rewriteBuilder.RewritePath(matchPath, rewrite, false);
+            });
+
             var app = builder.Build();
             app.Invoke(context).Wait();
             Assert.Equal(expected, context.Request.Path);
@@ -53,9 +57,10 @@ namespace EntropyTests.Rewrite2Tests
             HttpContext context = CreateRequest("/", "/");
             context.Request.Scheme = "http";
             var builder = new ApplicationBuilder(serviceProvider: null);
-            var rewriteBuilder = new UrlRewriteBuilder();
-            rewriteBuilder.RedirectScheme(30);
-            builder.UseRewriter(rewriteBuilder.Build());
+            builder.UseRewriter(rewriteBuilder =>
+            {
+                rewriteBuilder.RedirectScheme(30);
+            });
             var app = builder.Build();
             app.Invoke(context).Wait();
             Assert.True(context.Response.Headers["location"].First().StartsWith("https"));
@@ -67,9 +72,10 @@ namespace EntropyTests.Rewrite2Tests
             HttpContext context = CreateRequest("/", "/");
             context.Request.Scheme = "http";
             var builder = new ApplicationBuilder(serviceProvider: null);
-            var rewriteBuilder = new UrlRewriteBuilder();
-            rewriteBuilder.RewriteScheme();
-            builder.UseRewriter(rewriteBuilder.Build());
+            builder.UseRewriter(rewriteBuilder =>
+            {
+                rewriteBuilder.RewriteScheme();
+            });
             var app = builder.Build();
             app.Invoke(context).Wait();
             Assert.True(context.Request.Scheme.Equals("https"));

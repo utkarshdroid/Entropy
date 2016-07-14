@@ -14,6 +14,7 @@ namespace Rewrite.ConditionParser
        
         public bool VisitConditionExpression(HttpContext context, Match results, Match previous, string concatTestString)
         {
+            // 
             if (Operand is RegexOperand)
             {
                 return (Operand as RegexOperand).VisitRegexOperand(previous, concatTestString);

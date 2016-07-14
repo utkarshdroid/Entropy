@@ -31,10 +31,10 @@ namespace Rewrite.Structure2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-
-            var rewriteBuilder = new UrlRewriteBuilder();
-            rewriteBuilder.AddRules(RewriteConfiguration.AddRewriteFile("Rewrite.txt"));
-            app.UseRewriter(rewriteBuilder.Build());
+            app.UseRewriter(rewriteBuilder =>
+            {
+                rewriteBuilder.ImportFromModRewrite("Rewrite.txt");
+            });
             app.Run(context => context.Response.WriteAsync(context.Request.Path));
         }
     }

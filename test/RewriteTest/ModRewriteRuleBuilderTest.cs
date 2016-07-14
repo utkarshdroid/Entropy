@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Rewrite.Structure2
+namespace RewriteTest
 {
-    public class RuleBuilder
+    public class ModRewriteRuleBuilderTest
     {
+
     }
 }

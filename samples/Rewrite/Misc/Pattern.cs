@@ -27,12 +27,13 @@ namespace Rewrite.ConditionParser
                         res.Append(segment.Variable);
                         break;
                     case SegmentType.ServerParameter:
-                        var serverParam = ServerVariables.ApplyServerVariable(context, segment.Variable);
-                        // TODO fix ApplyServerVariable to actually modify context.
-                        if (serverParam != ServerVariable.NONE)
-                        {
-                            res.Append(serverParam);
-                        }
+                        throw new NotImplementedException();
+                        //var serverParam = ServerVariables.GetServerVariable(segment.Variable);
+                        //// TODO fix ApplyServerVariable to actually modify context.
+                        //if (serverParam != ServerVariable.NONE)
+                        //{
+                        //    res.Append(serverParam);
+                        //}
                         break;
                     case SegmentType.RuleParameter:
                         var ruleParam = ruleMatch.Groups[segment.Variable];

@@ -21,7 +21,7 @@ namespace RewriteTest
             var rule = new ModRewriteRule
             {
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[NC]")
+                Flags = FlagParser.ParseRuleFlags("[NC]")
             };
             var res = rule.ApplyRule(context);
             Assert.True(res.Result == RuleTerminiation.Continue);

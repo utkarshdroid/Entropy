@@ -9,22 +9,23 @@ namespace Rewrite.Structure2
 
     public static class UrlRewriteExtensions
     {
-        public static IApplicationBuilder UseRewriter(this IApplicationBuilder app, List<Rule> rules)
+        public static IApplicationBuilder UseRewriter(this IApplicationBuilder app, Action<UrlRewriteBuilder> action)
         {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
-
+            var rules = new UrlRewriteBuilder();
+            action(rules);
+            var options = new UrlRewriteOptions
+            {
+                Rules = rules.Build(),
+            };
             if (rules == null)
             {
                 throw new ArgumentNullException(nameof(rules));
             }
 
-            var options = new UrlRewriteOptions
-            {
-                Rules = rules,
-            };
             return app.Use(next => new UrlRewriteMiddleware(next, options).Invoke);
         }
     }

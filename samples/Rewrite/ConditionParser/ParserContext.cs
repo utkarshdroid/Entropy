@@ -3,13 +3,13 @@
 
 namespace Rewrite.ConditionParser
 {
-    public class ModRewriteParserContext
+    public class ParserContext
     {
         private readonly string _template;
         private int _index;
         private int? _mark;
 
-        public ModRewriteParserContext(string condition)
+        public ParserContext(string condition)
         {
             _template = condition;
             _index = -1;
@@ -40,7 +40,7 @@ namespace Rewrite.ConditionParser
         }
         public string Capture()
         {
-            // TODO make caller responsible for buffering token
+            // TODO make this return a range rather than a string.
             if (_mark.HasValue)
             {
                 var value = _template.Substring(_mark.Value, _index - _mark.Value);

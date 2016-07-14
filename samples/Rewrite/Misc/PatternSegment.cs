@@ -12,7 +12,7 @@ namespace Rewrite.ConditionParser
     }
     public class PatternSegment
     {
-        public string Variable { get; }
+        public string Variable { get; } // TODO make this a range. 
         public SegmentType Type { get; }
 
         public PatternSegment(string variable, SegmentType type)

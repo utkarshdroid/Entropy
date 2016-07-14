@@ -17,12 +17,16 @@ namespace Rewrite.ConditionParser
         // TODO comments about what went wrong in exceptions
         public static Pattern ParseConditionTestString(string testString)
         {
-            // TODO Create different parsers, regex, condition, etc.
+            // Example inputs:
+            // %{REMOTE_ADDR}
+            // /var/www/%{REQUEST_URI}
+            // %1
+            // $1
             if (testString == null)
             {
-                testString = String.Empty;
+                testString = string.Empty;
             }
-            var context = new ModRewriteParserContext(testString);
+            var context = new ParserContext(testString);
             var results = new List<PatternSegment>();
             while (context.Next())
             {
@@ -42,7 +46,10 @@ namespace Rewrite.ConditionParser
                 {
                     // This is a parameter from the rule, verify that it is a number from 0 to 9 directly after it
                     // and create a new Pattern Segment.
-                    context.Next();
+                    if (!context.Next())
+                    {
+                        throw new ArgumentException();
+                    }
                     context.Mark();
                     if (context.Current >= '0' && context.Current <= '9')
                     {
@@ -72,8 +79,9 @@ namespace Rewrite.ConditionParser
         // pre: will only be called if context.Current is an unescaped '%' 
         // post: adds an application to the teststring results that will be concatinated on success
         // TODO make this return the condition test string segment and a bool
-        private static bool ParseConditionParameter(ModRewriteParserContext context, List<PatternSegment> results)
+        private static bool ParseConditionParameter(ParserContext context, List<PatternSegment> results)
         {
+            // Parse { }
             if (context.Current == OpenBrace)
             {
                 // Start of a server variable
@@ -99,7 +107,7 @@ namespace Rewrite.ConditionParser
 
                 // Need to verify server variable captured exists
                 var rawServerVariable = context.Capture();
-                if (IsValidServerVariable(context, rawServerVariable))
+                if (IsValidServerVariable(rawServerVariable))
                 {
                     results.Add(new PatternSegment(rawServerVariable, SegmentType.ServerParameter));
                 }
@@ -115,6 +123,8 @@ namespace Rewrite.ConditionParser
                 context.Mark();
                 context.Next();
                 var rawConditionParameter = context.Capture();
+                // Once we leave this method, the while loop will call next again. Because
+                // capture is exclusive, we need to go one past the end index, capture, and then go back.
                 context.Back();
                 results.Add(new PatternSegment(rawConditionParameter, SegmentType.ConditionParameter));
             }
@@ -126,7 +136,7 @@ namespace Rewrite.ConditionParser
             return true;
         }
 
-        private static bool ParseLiteral(ModRewriteParserContext context, List<PatternSegment> results)
+        private static bool ParseLiteral(ParserContext context, List<PatternSegment> results)
         {
             context.Mark();
             string literal;
@@ -155,15 +165,15 @@ namespace Rewrite.ConditionParser
                 return false;
             }
         }
-        private static bool IsValidLiteral(ModRewriteParserContext context, string literal)
+        private static bool IsValidLiteral(ParserContext context, string literal)
         {
             // TODO
             return true;
         }
-        private static bool IsValidServerVariable(ModRewriteParserContext context, string variable)
+        private static bool IsValidServerVariable(string variable)
         {
             // TODO
-            return ServerVariables.ApplyServerVariable(null, variable) != ServerVariable.NONE;
+            return ServerVariables.GetServerVariable(variable) != ServerVariable.NONE;
         }
     }
 }

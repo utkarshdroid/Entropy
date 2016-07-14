@@ -14,7 +14,16 @@ namespace Rewrite.Structure2
         public string Description { get; set; } = string.Empty;
         public RuleExpression InitialRule { get; set; }
         public Pattern Transforms { get; set; }
-        public Flags Flags { get; set; } = new Flags(new Dictionary<FlagType, string>());
+        public RuleFlags Flags { get; set; } = new RuleFlags();
+        public ModRewriteRule() { }
+        public ModRewriteRule(List<Condition> conditions, RuleExpression initialRule, Pattern transforms, RuleFlags flags, string description = "")
+        {
+            Conditions = conditions;
+            InitialRule = initialRule;
+            Transforms = transforms;
+            Flags = flags;
+            Description = description;
+        }
         public override RuleResult ApplyRule(HttpContext context)
         {
             // 1. Figure out which section of the string to match for the initial rule.
@@ -25,7 +34,7 @@ namespace Rewrite.Structure2
                 return new RuleResult { Result = RuleTerminiation.Continue };
             }
 
-            if (Flags.CheckFlag(FlagType.EscapeBackreference) != null)
+            if (Flags.CheckFlag(RuleFlagType.EscapeBackreference) != null)
             {
                 // TODO Escape Backreferences here.
             }
@@ -38,23 +47,23 @@ namespace Rewrite.Structure2
             // at this point, our rule passed, we can now apply the on match function
             var result = Transforms.ApplyPattern(context, results, previous);
 
-            if (Flags.CheckFlag(FlagType.Forbidden) != null)
+            if (Flags.CheckFlag(RuleFlagType.Forbidden) != null)
             {
                 context.Response.StatusCode = 403;
                 return new RuleResult { Result = RuleTerminiation.ResponseComplete };
             }
-            else if (Flags.CheckFlag(FlagType.Gone) != null)
+            else if (Flags.CheckFlag(RuleFlagType.Gone) != null)
             {
                 context.Response.StatusCode = 410;
                 return new RuleResult { Result = RuleTerminiation.ResponseComplete };
             }
             context.Request.Path = new PathString(result);
             string statusCode;
-            if ((statusCode = Flags.CheckFlag(FlagType.Redirect)) != null)
+            if ((statusCode = Flags.CheckFlag(RuleFlagType.Redirect)) != null)
             {
                 return new RuleResult { Result = RuleTerminiation.ResponseComplete };
             }
-            else if (Flags.CheckFlag(FlagType.Last) != null || Flags.CheckFlag(FlagType.End) != null)
+            else if (Flags.CheckFlag(RuleFlagType.Last) != null || Flags.CheckFlag(RuleFlagType.End) != null)
             {
                 return new RuleResult { Result = RuleTerminiation.StopRules };
             }
@@ -71,13 +80,17 @@ namespace Rewrite.Structure2
 
         private bool CheckCondition(ModRewriteRule rule, HttpContext context, Match results, Match previous)
         {
+            if (rule.Conditions == null)
+            {
+                return true;
+            }
             // TODO Visitor pattern here
             foreach (var condition in rule.Conditions)
             {
                 var concatTestString = condition.TestStringSegments.ApplyPattern(context, results, previous);
                 var match = condition.ConditionExpression.VisitConditionExpression(context, results, previous, concatTestString);
 
-                if (CheckMatchResult(match) && !(Flags.HasFlag(FlagType.Or)))
+                if (CheckMatchResult(match) && !(Flags.HasFlag(RuleFlagType.Or)))
                 {
                     return false;
                 }

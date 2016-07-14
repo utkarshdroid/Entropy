@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Rewrite.ConditionParser;
 using Rewrite.Structure2;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Xunit;
 
 namespace RewriteTest
 {
-    public class ModRewriteTest
+    public class ModRewriteFlagTest
     {
         // Flag tests
         [Fact]
@@ -17,7 +18,7 @@ namespace RewriteTest
             {
                 InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)")} , Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[F]")
+                Flags = FlagParser.ParseRuleFlags("[F]")
             };
             var res = rule.ApplyRule(context);
             Assert.True(res.Result == RuleTerminiation.ResponseComplete);
@@ -32,7 +33,7 @@ namespace RewriteTest
             {
                 InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[G]")
+                Flags = FlagParser.ParseRuleFlags("[G]")
             };
             var res = rule.ApplyRule(context);
             Assert.True(res.Result == RuleTerminiation.ResponseComplete);
@@ -47,7 +48,7 @@ namespace RewriteTest
             {
                 InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[L]")
+                Flags = FlagParser.ParseRuleFlags("[L]")
             };
             var res = rule.ApplyRule(context);
             Assert.True(res.Result == RuleTerminiation.StopRules);
@@ -63,7 +64,7 @@ namespace RewriteTest
             {
                 InitialRule = new RuleExpression { Operand = new RegexOperand { Regex = new Regex("/hey/(.*)") }, Invert = false },
                 Transforms = ConditionTestStringParser.ParseConditionTestString("/$1"),
-                Flags = FlagParser.TokenizeAndParseFlags("[G]")
+                Flags = FlagParser.ParseRuleFlags("[G]")
             };
             var res = rule.ApplyRule(context);
             Assert.True(res.Result == RuleTerminiation.ResponseComplete);

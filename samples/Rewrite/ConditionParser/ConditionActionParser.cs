@@ -20,7 +20,7 @@ namespace Rewrite.ConditionParser
             {
                 condition = String.Empty;
             }
-            var context = new ModRewriteParserContext(condition);
+            var context = new ParserContext(condition);
             var results = new ParsedConditionExpression();
             if (!context.Next())
             {
@@ -119,7 +119,7 @@ namespace Rewrite.ConditionParser
             }
         }
 
-        public static ParsedConditionExpression ParseAttributeTest(ModRewriteParserContext context, bool invert)
+        public static ParsedConditionExpression ParseAttributeTest(ParserContext context, bool invert)
         {
             if (!context.Next())
             {

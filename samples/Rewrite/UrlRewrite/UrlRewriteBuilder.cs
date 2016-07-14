@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Rewrite.FileParser;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Rewrite.Structure2
@@ -21,10 +23,38 @@ namespace Rewrite.Structure2
         {
             _rules.AddRange(rules);
         }
+        public void ImportFromModRewrite(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentException(nameof(filePath));
+            }
+            using (var stream = File.OpenRead(filePath))
+            {
+                _rules.AddRange(RewriteConfigurationFileParser.Parse( new StreamReader(stream)));
+            };
+        }
+        public void ImportFromModRewrite(TextReader reader)
+        {
+            _rules.AddRange(RewriteConfigurationFileParser.Parse(reader));
+        }
 
         public void AddRule(Rule rule)
         {
             _rules.Add(rule);
+        }
+
+        public void AddModRule(string rule, Action<ModRewriteRuleBuilder> action)
+        {
+            var builder = new ModRewriteRuleBuilder(rule);
+            action(builder);
+            AddRule(builder.Build());
+        }
+
+        public void AddModRule(string rule)
+        {
+            var builder = new ModRewriteRuleBuilder(rule);
+            AddRule(builder.Build());
         }
 
         public void RewritePath(string regex, string newPath, bool stopRewriteOnSuccess = false)
@@ -51,7 +81,6 @@ namespace Rewrite.Structure2
         {
             _rules.Add(new FunctionalRule { OnApplyRule = onApplyRule, OnCompletion = transform});
         }
-
 
         public void RulesFromConfig(IConfiguration rulesFromConfig)
         {

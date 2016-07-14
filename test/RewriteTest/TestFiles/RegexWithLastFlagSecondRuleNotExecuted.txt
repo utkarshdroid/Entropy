@@ -1,0 +1,2 @@
+﻿RewriteRule /hey/(.*) /$1 [L]
+RewriteRule /hello /what
