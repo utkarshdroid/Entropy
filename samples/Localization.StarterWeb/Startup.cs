@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace Localization.StarterWeb
 {
@@ -24,6 +25,7 @@ namespace Localization.StarterWeb
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
@@ -150,6 +152,7 @@ namespace Localization.StarterWeb
             var config = new ConfigurationBuilder().AddCommandLine(args).Build();
             
             var host = new WebHostBuilder()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
                 .UseConfiguration(config)
                 .UseIISIntegration()
