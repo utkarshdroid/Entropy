@@ -57,7 +57,10 @@ namespace Localization.StarterWeb
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 // Add support for localizing strings in data annotations (e.g. validation messages) via the
                 // IStringLocalizer abstractions.
-                .AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedResource));
+                });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
