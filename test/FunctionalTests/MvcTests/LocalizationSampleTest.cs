@@ -79,14 +79,16 @@ mypartial
                 var expected1 =
                     "Hello there!!" + Environment.NewLine +
                     "Learn More" + Environment.NewLine +
-                    "Hi John      ! You are in 2015 year and today is Thursday";
+                    "Hi John      ! You are in 2015 year and today is Thursday" + Environment.NewLine +
+                    "Missing value";
 
                 yield return new[] { "en-GB", expected1 };
 
                 var expected2 =
                     "Bonjour!" + Environment.NewLine +
                     "apprendre Encore Plus" + Environment.NewLine +
-                    "Salut John      ! Vous êtes en 2015 an aujourd'hui est Thursday";
+                    "Salut John      ! Vous êtes en 2015 an aujourd'hui est Thursday" + Environment.NewLine +
+                    "Missing value";
                 yield return new[] { "fr", expected2 };
             }
         }
