@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "Microsoft.AspNetCore.Hosting": "1.0.0-*",
-    "Microsoft.AspNetCore.Owin": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNetCore.Hosting": "1.0.1",
+    "Microsoft.AspNetCore.Owin": "1.0.1",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.2"
   },
   "buildOptions": {
     "emitEntryPoint": true
   },
   "frameworks": {
-    "net451": { },
+    "net451": {},
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {

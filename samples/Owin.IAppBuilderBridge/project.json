@@ -4,15 +4,15 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Owin": "1.0.0-*",
-    "Microsoft.AspNetCore.DataProtection": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
+    "Microsoft.AspNetCore.Owin": "1.0.1",
+    "Microsoft.AspNetCore.DataProtection": "1.0.1",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.2",
+    "Microsoft.Extensions.DependencyInjection": "1.0.1",
     "Microsoft.Owin": "3.0.0"
   },
   "frameworks": {
-    "net451": { }
+    "net451": {}
   },
   "publishOptions": {
     "include": [
