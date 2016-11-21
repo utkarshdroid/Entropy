@@ -19,7 +19,10 @@ namespace Config.Options.Snapshot.Web
 {
     public class TimeOptions
     {
+        // This will remember when the options was created
         public DateTime CreationTime { get; set; } = DateTime.Now;
+
+        // This is bound to config and can be modified by editing config.json.
         public string Message { get; set; }
     }
 
@@ -42,9 +45,9 @@ namespace Config.Options.Snapshot.Web
     {
         public Startup(IHostingEnvironment env)
         {
-            // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
+                // reloadOnChange: true is required for config changes to be detected.
                 .AddJsonFile("config.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -54,12 +57,17 @@ namespace Config.Options.Snapshot.Web
 
         public void Configure(IApplicationBuilder app)
         {
+            // Simple mockup of a simple per request controller that just prints
+            // the creation time and message of the TimeOptions
             app.Run(DisplayTimeAsync);
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Simple mockup of a simple per request controller
             services.AddScoped<Controller>();
+
+            // This is what binds config.json to the options and setups the change tracking.
             services.Configure<TimeOptions>(Configuration.GetSection("Time"));
         }
 
