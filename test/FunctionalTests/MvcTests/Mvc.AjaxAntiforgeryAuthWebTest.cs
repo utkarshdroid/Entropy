@@ -2,46 +2,32 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using EntropyTests;
-using Microsoft.AspNetCore.Server.IntegrationTesting;
 using Xunit;
 
 namespace FunctionalTests.MvcTests
 {
-    public class MvcAjaxAntiforgeryAuthWebTest
+    public class MvcAjaxAntiforgeryAuthWebTest : IClassFixture<SampleTestFixture<Mvc.AjaxAntiforgeryAuth.Web.Startup>>
     {
-        private const string SiteName = "Mvc.AjaxAntiforgeryAuth.Web";
-
-        [Theory]
-        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, "http://localhost:6208")]
-        public async Task RunAntiforgery_AllPlatforms(ServerType server, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, string applicationBaseUrl)
+        public MvcAjaxAntiforgeryAuthWebTest(SampleTestFixture<Mvc.AjaxAntiforgeryAuth.Web.Startup> fixture)
         {
-            await RunAntiforgerySite(server, runtimeFlavor, architecture, applicationBaseUrl);
+            Client = fixture.Client;
         }
 
-        private async Task RunAntiforgerySite(
-            ServerType server,
-            RuntimeFlavor runtimeFlavor,
-            RuntimeArchitecture architecture,
-            string applicationBaseUrl)
-        {
-            await TestServices.RunSiteTest(
-                SiteName,
-                server,
-                runtimeFlavor,
-                architecture,
-                applicationBaseUrl,
-                async (httpClient, logger, token) =>
-                {
-                    var response = await RetryHelper.RetryRequest(async () =>
-                    {
-                        return await httpClient.GetAsync("/Home/Antiforgery");
-                    }, logger, token, retryCount: 30);
+        public HttpClient Client { get; }
 
-                    // Authentication should run before Antiforgery
-                    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-                });
+        [Fact]
+        public async Task AuthenticationRunBeforeAntiforgery()
+        {
+            // Arrange & Act
+            var response = await Client.PostAsync("/Home/Antiforgery", content: null);
+
+            // Assert
+            // Authentication should run before Antiforgery
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.StartsWith("/Account/Login", response.Headers.Location.PathAndQuery);
         }
     }
 }
